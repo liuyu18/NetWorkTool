@@ -3,8 +3,9 @@ package main
 import (
 	"fmt"
 	"os"
-	//"toos/scanner/tcpConnectScanner/util"
 
+	"myTools/scanner/tcpConnectScanner/iputil"
+	"myTools/scanner/tcpConnectScanner/tcpScannerTool"
 )
 
 func main() {
@@ -13,32 +14,34 @@ func main() {
 	fmt.Printf("1: %s\n",os.Args[1])
 	fmt.Printf("2: %s\n",os.Args[2])
 
+	if len(os.Args) == 3 {
+		ipList := os.Args[1]
+		portList := os.Args[2]
+		ips, err := iputil.GetIpList(ipList)
+		if err != nil {
+			fmt.Printf("parse ip list error: %+v\n", err)
+		}
+		fmt.Println(ips)
+		ports, err := iputil.GetPorts(portList)
 
-	// ipList := os.Args[1]
-	// portList := os.Args[2]
-	// fmt.Println("ipList:",ipList)
-	// fmt.Println("portList:",portList)
+		if err != nil {
+			fmt.Printf("parse ports error: %+v\n", err)
+		}
+		fmt.Println(ports)
 
-	// if len(os.Args) == 3 {
-	// 	ipList := os.Args[1]
-	// 	portList := os.Args[2]
-	// 	fmt.Println("ipList:",ipList)
-	// 	fmt.Println("portList:",portList)
-		//ips, err := util.GetIpList(ipList)
-		//ports, err := util.GetPorts(portList)
-		//_ = err
-		// fmt.Printf("iplist: %v, portList: %v, err: %v\n", ips, ports, err)
-		// for _, ip := range ips {
-		// 	for _, port := range ports {
-		// 		_, err := scanner.Connect(ip.String(), port)
-		// 		if err != nil {
-		// 			continue
-		// 		}
-		// 		fmt.Printf("ip: %v, port: %v is open\n", ip, port)
-		// 	}
-		// }
-
-	// } else {
-	// 	fmt.Printf("%v iplist port\n", os.Args[0])
-	// }
+		for _, ipItem := range ips {
+			for _, portItem := range ports {
+				_, err := tcpScannerTool.Connect(ipItem.String(),portItem)
+				if err != nil {
+					continue
+				}
+				fmt.Printf("ip: %v, port: %v is open\n", ipItem, portItem)
+			}
+		}
+	} else {
+		fmt.Printf("%v iplist port\n", os.Args[0])
+	}
 }
+
+
+// go run .\main.go 45.22.2.156,114.114.114.114 22,23,24,25,80-100

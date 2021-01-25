@@ -1,4 +1,4 @@
-package scanner
+package tcpScannerTool
 
 import (
 	"fmt"
